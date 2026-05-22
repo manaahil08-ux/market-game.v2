@@ -7,23 +7,23 @@
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; }
         body { 
-            font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: #f0f2f5; 
-            display: flex; 
-            justify-content: center; 
-            align-items: center; 
-            height: 100vh; 
-            overflow: hidden; 
-        }
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background: #f0f2f5; 
+    display: flex; 
+    justify-content: center; 
+    align-items: center; 
+    min-height: 100vh; /* changed from height to min-height */
+    overflow: hidden; 
+}
         
         #game-container {
-            width: 1000px;
-            height: 562px;
+            width: 1200px;
+            height: 675px;
             position: relative;
             background: #ffffff;
             overflow: hidden;
             box-shadow: 0 20px 40px rgba(0,0,0,0.08);
-            border-radius: 20px;
+            border-radius: 24px;
             border: 1px solid #e1e8ed;
         }
 
@@ -40,41 +40,95 @@
             display: flex !important; 
         }
 
-        /* --- SCREEN 1: INTRO --- */
+        /* --- SCREEN 1: INTRO & INSTRUCTIONS --- */
         #intro-screen { 
             background: radial-gradient(circle at center, #ffffff 0%, #f4f7f9 100%);
             flex-direction: column;
             justify-content: center;
             align-items: center;
+            padding: 40px;
         }
         .welcome-badge {
             background: #e1f5fe;
             color: #0288d1;
-            padding: 6px 16px;
+            padding: 8px 20px;
             font-weight: 700;
-            font-size: 13px;
+            font-size: 15px;
             border-radius: 20px;
             text-transform: uppercase;
             letter-spacing: 1px;
             margin-bottom: 16px;
         }
         .game-title { 
-            font-size: 56px; 
+            font-size: 64px; 
             color: #2c3e50; 
             font-weight: 800;
             text-align: center;
-            margin-bottom: 40px;
+            margin-bottom: 32px;
             letter-spacing: -0.5px;
         }
+        
+        .instructions-card {
+            background: #ffffff;
+            border: 2px solid #e2e8f0;
+            border-radius: 24px;
+            padding: 32px 40px;
+            max-width: 620px;
+            width: 100%;
+            box-shadow: 0 6px 20px rgba(0,0,0,0.03);
+            margin-bottom: 40px;
+        }
+        .instructions-title {
+            font-size: 22px;
+            color: #475569;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 24px;
+            text-align: center;
+        }
+        .instructions-list {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        .instructions-step {
+            display: flex;
+            align-items: center;
+            gap: 18px;
+            font-size: 20px;
+            color: #334155;
+            font-weight: 700;
+        }
+        .step-num {
+            background: #2ccce4;
+            color: white;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 18px;
+            font-weight: 900;
+            flex-shrink: 0;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 20px;
+        }
+
         .start-btn { 
             background: #4a69bd; 
             color: white; 
             border: none;
-            padding: 16px 45px; 
-            font-size: 20px; 
-            border-radius: 30px; 
+            padding: 20px 50px; 
+            font-size: 24px; 
+            border-radius: 40px; 
             cursor: pointer; 
-            font-weight: 700; 
+            font-weight: 800; 
             box-shadow: 0 6px 15px rgba(74, 105, 189, 0.25);
             transition: all 0.2s ease;
         }
@@ -84,6 +138,196 @@
             box-shadow: 0 8px 20px rgba(74, 105, 189, 0.35);
         }
         .start-btn:active { transform: translateY(2px); }
+
+        .preview-btn {
+            background: #10b981;
+            box-shadow: 0 6px 15px rgba(16, 185, 129, 0.25);
+        }
+        .preview-btn:hover {
+            background: #059669;
+            box-shadow: 0 8px 20px rgba(16, 185, 129, 0.35);
+        }
+
+        /* --- PREVIEW VIDEO MODAL THEATER --- */
+        #preview-theater {
+            display: none;
+            position: absolute;
+            inset: 0;
+            background: rgba(15, 23, 42, 0.95);
+            z-index: 500;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+        }
+        #preview-theater.active {
+            display: flex;
+        }
+        .theater-window {
+            width: 1000px;
+            height: 500px;
+            background: #f8fafc;
+            border-radius: 20px;
+            position: relative;
+            overflow: hidden;
+            border: 6px solid #334155;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+        }
+        .theater-banner {
+            color: #ffffff;
+            font-size: 28px;
+            font-weight: 800;
+            margin-bottom: 20px;
+            letter-spacing: 0.5px;
+            background: #ffbc00;
+            color: #1e293b;
+            padding: 8px 30px;
+            border-radius: 30px;
+        }
+        .theater-controls {
+            margin-top: 20px;
+            display: flex;
+            gap: 15px;
+        }
+        .theater-btn {
+            padding: 12px 35px;
+            font-size: 18px;
+            font-weight: 700;
+            border: none;
+            border-radius: 30px;
+            cursor: pointer;
+        }
+        .close-theater-btn { background: #ef4444; color: white; }
+        .close-theater-btn:hover { background: #dc2626; }
+        
+        /* --- CINEMATIC ANIMATIONS INSIDE THEATER --- */
+        .preview-hand {
+            position: absolute;
+            width: 70px;
+            height: 70px;
+            z-index: 600;
+            pointer-events: none;
+            display: none;
+        }
+        
+        /* Demo Step 1: Shelf Selection */
+        .preview-shelf-view {
+            display: none;
+            width: 100%;
+            height: 100%;
+            position: relative;
+            background: #f1f5f9;
+        }
+        .preview-shelf {
+            position: absolute;
+            top: 100px;
+            left: 420px; /* Shifted right to make room for giant list */
+            width: 530px;
+            height: 300px;
+            background: white;
+            border-bottom: 12px solid #cbd5e1;
+            border-radius: 16px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 20px;
+        }
+        .preview-food-item {
+            width: 130px;
+            height: 130px;
+        }
+        
+        /* Demo Step 2: Checkout Dragging */
+        .preview-checkout-view {
+            display: none;
+            width: 100%;
+            height: 100%;
+            position: relative;
+            background: #f4f7f9;
+        }
+
+        /* Highlighted Preview List Container */
+        #preview-list-container {
+            position: absolute;
+            top: 60px;
+            left: 40px;
+            width: 300px;
+            background: #ffffff;
+            border-radius: 20px;
+            padding: 20px 25px;
+            border: 6px solid #e67e22; /* Huge noticeable orange border */
+            box-shadow: 0 0 30px rgba(230, 126, 34, 0.5);
+            z-index: 20;
+            transform: scale(1.15); /* Scaled up heavily */
+            transform-origin: top left;
+        }
+        .pointer-label {
+            position: absolute;
+            top: -25px;
+            right: -30px;
+            background: #ef4444;
+            color: white;
+            padding: 8px 20px;
+            border-radius: 20px;
+            font-weight: 900;
+            font-size: 16px;
+            letter-spacing: 1px;
+            animation: bounce 1s infinite;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+        }
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        /* Animation Keyframe Blocks Triggered by JS classes */
+        .animate-tap-hand {
+            display: block;
+            animation: interactiveTap 2.5s ease-in-out infinite;
+        }
+        .animate-select-food {
+            animation: foodPopInCart 2.5s ease-in-out infinite;
+        }
+        .animate-drag-checkout {
+            display: block;
+            animation: interactiveDragCheckout 4s linear infinite;
+        }
+        .animate-item-checkout {
+            animation: foodDragCheckout 4s linear infinite;
+        }
+        .animate-laser-checkout {
+            animation: laserFlash 4s linear infinite;
+        }
+
+        @keyframes interactiveTap {
+            0% { transform: translate(850px, 420px) scale(1); }
+            30% { transform: translate(490px, 220px) scale(1); }
+            35% { transform: translate(490px, 220px) scale(0.85); }
+            45% { transform: translate(490px, 220px) scale(1); }
+            100% { transform: translate(490px, 420px) scale(1); }
+        }
+        @keyframes foodPopInCart {
+            0%, 35% { transform: scale(1) translate(0, 0); opacity: 1; }
+            55%, 100% { transform: scale(0.2) translate(-800px, 900px); opacity: 0; }
+        }
+        @keyframes interactiveDragCheckout {
+            0% { transform: translate(130px, 300px); }
+            15% { transform: translate(130px, 300px); }
+            55% { transform: translate(520px, 300px); }
+            74% { transform: translate(800px, 230px); }
+            100% { transform: translate(800px, 500px); }
+        }
+        @keyframes foodDragCheckout {
+            0% { transform: translate(110px, 250px) scale(1); opacity: 1; }
+            15% { transform: translate(110px, 250px) scale(1); opacity: 1; }
+            55% { transform: translate(500px, 250px) scale(1); opacity: 1; }
+            74% { transform: translate(780px, 180px) scale(1); opacity: 1; }
+            85%, 100% { transform: translate(780px, 280px) scale(0.8); opacity: 0; }
+        }
+        @keyframes laserFlash {
+            0%, 42% { background: rgba(56, 189, 248, 0.3); }
+            43%, 55% { background: rgba(45, 212, 191, 0.8); }
+            56%, 100% { background: rgba(56, 189, 248, 0.3); }
+        }
 
         /* --- SCREEN 2: PLAY SCREEN --- */
         #play-screen { 
@@ -102,89 +346,96 @@
 
         #list-container { 
             position: absolute; 
-            top: 25px; 
-            left: 25px; 
-            width: 230px; 
+            top: 35px; 
+            left: 35px; 
+            width: 260px; 
             background: #ffffff; 
-            border-radius: 16px; 
-            padding: 15px 20px; 
+            border-radius: 20px; 
+            padding: 20px 25px; 
             box-shadow: 0 4px 12px rgba(0,0,0,0.03); 
             z-index: 10; 
             border: 1px solid #e2e8f0;
         }
         .list-header { 
-            font-size: 15px; 
+            font-size: 18px; 
             color: #64748b; 
             text-align: center; 
-            padding-bottom: 8px; 
-            margin-bottom: 8px; 
+            padding-bottom: 10px; 
+            margin-bottom: 10px; 
             text-transform: uppercase; 
             font-weight: 800;
             letter-spacing: 0.5px;
             border-bottom: 1px solid #f1f5f9;
         }
-        .list-item { 
-            font-size: 15px; 
+        .list-item, .preview-notepad-row { 
+            font-size: 18px; 
             color: #334155; 
             font-weight: 700; 
-            margin: 10px 0; 
+            margin: 14px 0; 
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+        .list-item {
             opacity: 0; 
             transform: translateY(6px); 
             transition: all 0.3s ease; 
-            display: flex;
-            align-items: center;
-            gap: 12px;
         }
         .list-item.visible { opacity: 1; transform: translateY(0); }
-        .list-item .checkbox {
-            width: 18px;
-            height: 18px;
+        
+        .list-item .checkbox, .preview-notepad-row .checkbox {
+            width: 22px;
+            height: 22px;
             border: 2px solid #cbd5e1;
-            border-radius: 5px;
+            border-radius: 6px;
             display: inline-block;
             transition: all 0.2s ease;
-        }
-        .list-item.checked { color: #94a3b8; text-decoration: line-through; }
-        .list-item.checked .checkbox { 
-            background: #2ccce4; 
-            border-color: #2ccce4;
             position: relative;
         }
-        .list-item.checked .checkbox::after {
+        
+        .list-item.checked, .preview-notepad-row.checked-off { 
+            color: #94a3b8; 
+            text-decoration: line-through; 
+        }
+        .list-item.checked .checkbox, .preview-notepad-row.checked-off .checkbox { 
+            background: #2ccce4; 
+            border-color: #2ccce4;
+        }
+        .list-item.checked .checkbox::after, .preview-notepad-row.checked-off .checkbox::after {
             content: '';
             position: absolute;
-            left: 4px;
-            top: 1px;
-            width: 4px;
-            height: 8px;
+            left: 6px;
+            top: 2px;
+            width: 5px;
+            height: 10px;
             border: solid white;
-            border-width: 0 2px 2px 0;
+            border-width: 0 2.5px 2.5px 0;
             transform: rotate(45deg);
         }
 
         #shelf-display-zone { 
             position: absolute; 
-            top: 60px; 
-            left: 280px; 
-            width: 680px; 
-            height: 360px; 
+            top: 70px; 
+            left: 330px; 
+            width: 835px; 
+            height: 430px; 
             display: flex; 
             flex-wrap: wrap;
             align-content: center;
             justify-content: center; 
-            gap: 25px;
+            gap: 35px;
             background: #ffffff;
-            border-bottom: 12px solid #e2e8f0; 
-            border-radius: 20px;
-            padding: 25px;
+            border-bottom: 14px solid #e2e8f0; 
+            border-radius: 24px;
+            padding: 30px;
             box-shadow: 0 10px 25px rgba(0,0,0,0.02);
             z-index: 5;
             border: 1px solid #e2e8f0;
         }
         
         .shelf-item-btn { 
-            width: 135px; 
-            height: 135px; 
+            width: 165px; 
+            height: 165px; 
             cursor: pointer;
             transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             background: transparent;
@@ -200,14 +451,14 @@
         @keyframes slideInFromTop { 0% { transform: translateY(-20px); opacity: 0; } 100% { transform: translateY(0); opacity: 1; } }
         
         .dropping-to-cart { animation: dropToCartArc 0.55s ease-in forwards; pointer-events: none; }
-        @keyframes dropToCartArc { 100% { transform: translate(-160px, 190px) scale(0.2); opacity: 0; } }
+        @keyframes dropToCartArc { 100% { transform: translate(-200px, 230px) scale(0.2); opacity: 0; } }
 
         #shopping-cart-wrapper { 
             position: absolute; 
-            bottom: 25px; 
-            left: 25px; 
-            width: 230px; 
-            height: 140px; 
+            bottom: 35px; 
+            left: 35px; 
+            width: 260px; 
+            height: 160px; 
             z-index: 10;
         }
         #shopping-cart-wrapper svg { width: 100%; height: 100%; filter: drop-shadow(0 4px 10px rgba(0,0,0,0.03)); }
@@ -220,26 +471,26 @@
         
         .cashier-wrapper {
             position: absolute;
-            bottom: 194px; 
-            left: 200px;
-            width: 210px;
-            height: 310px; 
+            bottom: 232px; 
+            left: 240px;
+            width: 250px;
+            height: 370px; 
             z-index: 1;
             pointer-events: none;
         }
         .cashier-wrapper svg { width: 100%; height: 100%; overflow: visible; }
 
-        #conveyor-belt { position: absolute; bottom: 190px; left: 40px; width: 640px; height: 22px; background: #cbd5e1; border-radius: 6px; border-bottom: 6px solid #94a3b8; z-index: 5; }
+        #conveyor-belt { position: absolute; bottom: 228px; left: 50px; width: 760px; height: 26px; background: #cbd5e1; border-radius: 8px; border-bottom: 7px solid #94a3b8; z-index: 5; }
         
         #scanner-unit { 
             position: absolute; 
-            bottom: 212px; 
-            left: 450px; 
-            width: 130px; 
-            height: 18px; 
+            bottom: 254px; 
+            left: 540px; 
+            width: 155px; 
+            height: 22px; 
             background: #475569; 
             z-index: 6; 
-            border-radius: 4px;
+            border-radius: 5px;
             border: 2px solid #ffffff;
             box-shadow: 0 3px 6px rgba(0,0,0,0.12);
         }
@@ -247,7 +498,7 @@
             position: absolute;
             inset: 2px;
             background: rgba(56, 189, 248, 0.3);
-            border-radius: 2px;
+            border-radius: 3px;
             transition: background 0.1s ease;
         }
         #scanner-glass.active-scan {
@@ -255,10 +506,10 @@
         }
         #laser-line { 
             position: absolute; 
-            top: -150px; 
-            left: 63px; 
+            top: -180px; 
+            left: 76px; 
             width: 3px; 
-            height: 150px; 
+            height: 180px; 
             background: linear-gradient(to bottom, rgba(56,189,248,0) 0%, rgba(56,189,248,0.6) 100%); 
             display: none; 
             z-index: 7;
@@ -267,10 +518,10 @@
 
         #checkout-item-container { 
             position: absolute; 
-            bottom: 220px; 
-            left: 90px; 
-            width: 95px; 
-            height: 95px; 
+            bottom: 264px; 
+            left: 110px; 
+            width: 115px; 
+            height: 115px; 
             display: flex; 
             justify-content: center; 
             align-items: center; 
@@ -281,16 +532,14 @@
         #checkout-item-container:active { cursor: grabbing; }
         #checkout-item-container svg { width: 100%; height: 100%; }
 
-        /* The Bag Container Component */
         #paper-bag { 
             position: absolute; 
-            bottom: 160px; 
-            right: 80px; 
-            width: 210px; 
-            height: 240px; 
+            bottom: 190px; 
+            right: 100px; 
+            width: 250px; 
+            height: 285px; 
             z-index: 10;
         }
-        /* Base back asset layer */
         .bag-back-layout {
             position: absolute;
             inset: 0;
@@ -298,11 +547,10 @@
         }
         .bag-back-layout svg { width: 100%; height: 100%; filter: drop-shadow(0 6px 12px rgba(0,0,0,0.05)); }
         
-        /* Items slot perfectly into z-index 5, between the back and front of the bag */
         .bag-content-item { 
             position: absolute; 
-            width: 65px; 
-            height: 65px; 
+            width: 78px; 
+            height: 78px; 
             z-index: 5; 
             display: flex; 
             justify-content: center; 
@@ -311,7 +559,6 @@
         }
         .bag-content-item svg { width: 100%; height: 100%; }
 
-        /* Structural front lip line overlay */
         .bag-front-lip {
             position: absolute;
             inset: 0;
@@ -322,13 +569,13 @@
 
         #interim-overlay { display: none !important; position: absolute; inset: 0; background: rgba(255,255,255,0.95); backdrop-filter: blur(4px); z-index: 100; justify-content: center; align-items: center; color: #2c3e50; }
         #interim-overlay.show { display: flex !important; }
-        .interim-text { font-size: 32px; font-weight: 800; text-align: center; }
+        .interim-text { font-size: 38px; font-weight: 800; text-align: center; }
 
         /* --- SCREEN 4: WIN OVERLAYS --- */
         #win-overlay { display: none !important; position: absolute; inset: 0; background: rgba(255,255,255,0.85); backdrop-filter: blur(4px); z-index: 200; justify-content: center; align-items: center; }
         #win-overlay.show { display: flex !important; }
-        .shabash-card { background: white; border-radius: 20px; padding: 35px 65px; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.05); border: 1px solid #e2e8f0; }
-        .shabash-title { font-size: 44px; color: #2ccce4; font-weight: 800; }
+        .shabash-card { background: white; border-radius: 24px; padding: 40px 80px; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.05); border: 1px solid #e2e8f0; }
+        .shabash-title { font-size: 52px; color: #2ccce4; font-weight: 800; }
         
         #final-win-screen { 
             background: radial-gradient(circle at center, #ffffff 0%, #f4f7f9 100%);
@@ -336,36 +583,159 @@
             justify-content: center;
             align-items: center;
         }
-        .thankyou-title { font-size: 60px; color: #2c3e50; font-weight: 800; text-align: center; margin-bottom: 8px; }
-        .thankyou-subtitle { font-size: 18px; color: #64748b; margin-bottom: 35px; font-weight: 500; }
+        .thankyou-title { font-size: 72px; color: #2c3e50; font-weight: 800; text-align: center; margin-bottom: 12px; }
+        .thankyou-subtitle { font-size: 22px; color: #64748b; margin-bottom: 45px; font-weight: 500; }
 
         .confetti-piece {
             position: absolute;
-            width: 8px;
-            height: 14px;
+            width: 10px;
+            height: 16px;
             background: #ff6b6b;
             opacity: 0.85;
             z-index: 250;
             pointer-events: none;
             border-radius: 2px;
         }
+
+        /* Mobile & Tablet Auto-Scaling Fix */
+@media (max-width: 1240px) or (max-height: 700px) {
+    #game-container {
+        --scale-x: calc(100vw / 1220);
+        --scale-y: calc(100vh / 695);
+        /* Scale based on whichever dimension is tighter to prevent cropping */
+        --scale: min(var(--scale-x), var(--scale-y), 1);
+        
+        transform: scale(var(--scale));
+        transform-origin: center center;
+        flex-shrink: 0;
+    }
+}
+
+/* Force mobile users to flip to landscape mode for the best gameplay experience */
+@media (max-width: 767px) and (orientation: portrait) {
+    body::before {
+        content: "🔄 Please rotate your phone to landscape mode to play!";
+        position: fixed;
+        inset: 0;
+        background: #1e293b;
+        color: white;
+        z-index: 99999;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-weight: bold;
+        font-size: 20px;
+        padding: 20px;
+        text-align: center;
+    }
+}
     </style>
 </head>
 <body>
 
 <div id="game-container">
+    <div id="preview-theater">
+        <div class="theater-banner" id="theater-banner-text">Step 1: Tap to shop!</div>
+        
+        <div class="theater-window">
+            <svg class="preview-hand" id="theater-hand" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                <path d="M32 85 L20 50 C18 45, 26 40, 30 45 L40 58 L40 15 C40 8, 52 8, 52 15 L52 48 L58 18 C58 12, 68 12, 68 18 L68 48 L74 24 C74 18, 84 18, 84 24 L84 52 L88 34 C88 28, 98 28, 98 34 L94 75 L75 92 Z" fill="#fcd34d" stroke="#2c3e50" stroke-width="4" stroke-linejoin="round"/>
+            </svg>
+
+            <div class="preview-shelf-view" id="theater-shelf-scene">
+                <div id="preview-list-container">
+                    <div class="list-header">Shopping List</div>
+                    <div id="preview-list-row-1" class="preview-notepad-row">
+                        <span class="checkbox"></span> KHEERA
+                    </div>
+                    <div class="preview-notepad-row">
+                        <span class="checkbox"></span> TAMATAR
+                    </div>
+                    <div class="preview-notepad-row">
+                        <span class="checkbox"></span> SAIB
+                    </div>
+                </div>
+
+                <div class="preview-shelf">
+                    <div class="preview-food-item" id="theater-target-food"></div>
+                    <div class="preview-food-item" id="theater-decoy-food-1"></div>
+                    <div class="preview-food-item" id="theater-decoy-food-2"></div>
+                </div>
+            </div>
+
+            <div class="preview-checkout-view" id="theater-checkout-scene">
+    
+    <div class="cashier-wrapper" style="bottom: 82px; left: 150px; transform: scale(0.7); transform-origin: bottom left;">
+        <svg viewBox="0 0 140 240" xmlns="http://www.w3.org/2000/svg">
+            <path d="M15 240 L15 210 C15 140 125 140 125 210 L125 240 Z" fill="#2c3e50"/>
+            <path d="M20 190 Q 35 175, 55 185" stroke="#2c3e50" stroke-width="14" stroke-linecap="round" fill="none" />
+            <path d="M120 190 Q 105 175, 85 185" stroke="#2c3e50" stroke-width="14" stroke-linecap="round" fill="none" />
+            <circle cx="55" cy="185" r="7" fill="#fcd34d"/>
+            <circle cx="85" cy="185" r="7" fill="#fcd34d"/>
+            <path d="M44 165 L96 165 L102 240 L38 240 Z" fill="#e74c3c"/>
+            <rect x="58" y="130" width="24" height="30" fill="#fcd34d" rx="2"/>
+            <circle cx="70" cy="105" r="28" fill="#fcd34d"/>
+            <path d="M42 103 C42 77 98 77 98 103 C98 95 92 87 70 87 C48 87 42 95 42 103 Z" fill="#1e293b"/>
+            <circle cx="60" cy="101" r="2.5" fill="#2c3e50"/>
+            <circle cx="80" cy="101" r="2.5" fill="#2c3e50"/>
+            <path d="M63 113 Q70 118 77 113" stroke="#2c3e50" stroke-width="2" stroke-linecap="round" fill="none"/>
+        </svg>
+    </div>
+
+    <div style="position: absolute; bottom: 80px; left: 30px; width: 500px; height: 15px; background: #cbd5e1; border-bottom: 4px solid #94a3b8;"></div>
+                <div id="theater-scanner" style="position: absolute; bottom: 95px; left: 500px; width: 110px; height: 15px; background: #475569; border-radius: 4px;">
+                    <div id="theater-laser-glass" style="position: absolute; inset: 2px; background: rgba(56, 189, 248, 0.3);"></div>
+                </div>
+                <div id="theater-checkout-item" style="position: absolute; width: 90px; height: 90px; z-index: 550;"></div>
+                
+               <div style="position: absolute; bottom: 60px; right: 80px; width: 150px; height: 180px;">
+    <svg viewBox="0 0 100 100" style="width: 100%; height: 100%;">
+        <path d="M20 30 l6 -16 h48 l6 16 v56 h-60 z" fill="#e2b48c" stroke="#c6956b" stroke-width="1.5"/>
+        <path d="M40 14 q10 -10 20 0" fill="none" stroke="#a06e46" stroke-width="3.5" stroke-linecap="round"/>
+    </svg>
+</div>
+            </div>
+        </div>
+
+        <div class="theater-controls">
+            <button class="theater-btn close-theater-btn" id="btn-close-theater">Skip & Play Game</button>
+        </div>
+    </div>
+
     <div id="interim-overlay"><div class="interim-text">Counter Pe Chalein...</div></div>
 
     <div id="intro-screen" class="screen active">
         <div class="welcome-badge">Market Run</div>
         <h1 class="game-title">Market Chalein!?</h1>
-        <button class="start-btn" id="btn-start">Start Shopping</button>
+        
+        <div class="instructions-card">
+            <div class="instructions-title">✨ How To Play ✨</div>
+            <ul class="instructions-list">
+                <li class="instructions-step">
+                    <span class="step-num">1</span>
+                    Read the Urdu names on your list! 📝
+                </li>
+                <li class="instructions-step">
+                    <span class="step-num">2</span>
+                    Tap the right food on the shelf to put it in your cart! 🛒
+                </li>
+                <li class="instructions-step">
+                    <span class="step-num">3</span>
+                    Drag the food over the blue laser to scan it, then drop it into the bag! 🛍️
+                </li>
+            </ul>
+        </div>
+
+        <div class="button-group">
+            <button class="start-btn preview-btn" id="btn-watch-preview">🎬 Watch Preview</button>
+            <button class="start-btn" id="btn-start">Start Shopping</button>
+        </div>
     </div>
 
     <div id="play-screen" class="screen">
-        <svg class="aisle-background" viewBox="0 0 1000 562" preserveAspectRatio="none">
-            <rect width="1000" height="562" fill="#f8fafc"/>
-            <path d="M0 395 L1000 395 L1000 562 L0 562 Z" fill="#f1f5f9"/>
+        <svg class="aisle-background" viewBox="0 0 1200 675" preserveAspectRatio="none">
+            <rect width="1200" height="675" fill="#f8fafc"/>
+            <path d="M0 475 L1200 475 L1200 675 L0 675 Z" fill="#f1f5f9"/>
         </svg>
 
         <div id="list-container">
@@ -464,6 +834,8 @@
     let checkedItemsSet = new Set(); 
     let itemsInCartArr = []; 
     let checkoutStepIndex = 0;
+    let previewTimer = null;
+    let previewChecklistTimer = null;
 
     const uiIntroScreen = document.getElementById('intro-screen');
     const uiPlayScreen = document.getElementById('play-screen');
@@ -471,8 +843,13 @@
     const uiFinalWinScreen = document.getElementById('final-win-screen');
     const uiInterimOverlay = document.getElementById('interim-overlay');
     const uiWinOverlay = document.getElementById('win-overlay');
+    
     const btnStart = document.getElementById('btn-start');
     const btnRestart = document.getElementById('btn-restart');
+    const btnWatchPreview = document.getElementById('btn-watch-preview');
+    const btnCloseTheater = document.getElementById('btn-close-theater');
+    const previewTheater = document.getElementById('preview-theater');
+    
     const notepadTarget = document.getElementById('notepad-items-target');
     const shelfDisplayZone = document.getElementById('shelf-display-zone');
 
@@ -523,14 +900,84 @@
         } catch(e) {}
     }
 
+    /* --- THEATER PREVIEW SHOWREEL DISPATCHER --- */
+    function startPreviewVideo() {
+        previewTheater.classList.add('active');
+        
+        const bannerText = document.getElementById('theater-banner-text');
+        const hand = document.getElementById('theater-hand');
+        const shelfScene = document.getElementById('theater-shelf-scene');
+        const checkoutScene = document.getElementById('theater-checkout-scene');
+        
+        const targetFood = document.getElementById('theater-target-food');
+        const decoy1 = document.getElementById('theater-decoy-food-1');
+        const decoy2 = document.getElementById('theater-decoy-food-2');
+        const checkoutItem = document.getElementById('theater-checkout-item');
+        const laserGlass = document.getElementById('theater-laser-glass');
+        const previewListRow = document.getElementById('preview-list-row-1');
+
+        // Setup asset visual slots dynamically
+        targetFood.innerHTML = ITEM_GRAPHICS.cucumber;
+        decoy1.innerHTML = ITEM_GRAPHICS.tomato;
+        decoy2.innerHTML = ITEM_GRAPHICS.banana;
+        checkoutItem.innerHTML = ITEM_GRAPHICS.cucumber;
+
+        // Reset tracking states 
+        function loadSegmentOne() {
+            bannerText.innerText = "Step 1: Match the word and TAP the food! 🛒";
+            shelfScene.style.display = "block";
+            checkoutScene.style.display = "none";
+            
+            // Reset checklist check-off state
+            previewListRow.classList.remove('checked-off');
+            clearTimeout(previewChecklistTimer);
+
+            hand.className = "preview-hand animate-tap-hand";
+            targetFood.className = "preview-food-item animate-select-food";
+
+            // At 35% of the 2.5s tap loop (approx 875ms), the hand taps and the food begins to move.
+            // Check off the list item synchronously with this event.
+            previewChecklistTimer = setTimeout(() => {
+                previewListRow.classList.add('checked-off');
+            }, 875);
+
+            previewTimer = setTimeout(loadSegmentTwo, 5000);
+        }
+
+        function loadSegmentTwo() {
+            bannerText.innerText = "Step 2: DRAG the item over the laser scanner! 🛍️";
+            shelfScene.style.display = "none";
+            checkoutScene.style.display = "block";
+            
+            hand.className = "preview-hand animate-drag-checkout";
+            checkoutItem.className = "preview-food-item animate-item-checkout";
+            laserGlass.className = "animate-laser-checkout";
+
+            previewTimer = setTimeout(loadSegmentOne, 8000);
+        }
+
+        loadSegmentOne();
+    }
+
+    function stopPreviewVideo() {
+        clearTimeout(previewTimer);
+        clearTimeout(previewChecklistTimer);
+        previewTheater.classList.remove('active');
+        initNewGameSession();
+    }
+
+    btnWatchPreview.addEventListener('click', startPreviewVideo);
+    btnCloseTheater.addEventListener('click', stopPreviewVideo);
+
+    /* --- STANDARD CORE GAME LOGIC MAP --- */
     function spawnConfettiExplosion() {
         const gameContainer = document.getElementById('game-container');
         const particlesPerSide = 45;
         const colorPalette = ['#ffd32a', '#ff4757', '#2ed573', '#1e90ff', '#ffa502', '#9b59b6'];
 
         const launchOrigins = [
-            { x: 140, y: 220, dirFactor: 1 },  
-            { x: 800, y: 220, dirFactor: -1 }  
+            { x: 140, y: 300, dirFactor: 1 },  
+            { x: 1060, y: 300, dirFactor: -1 }  
         ];
 
         launchOrigins.forEach(origin => {
@@ -543,8 +990,8 @@
                 piece.style.top = `${origin.y + (Math.random() * 40 - 20)}px`;
                 gameContainer.appendChild(piece);
 
-                let velX = (Math.random() * 8 + 2) * origin.dirFactor;
-                let velY = (Math.random() * -15) - 6;
+                let velX = (Math.random() * 10 + 2) * origin.dirFactor;
+                let velY = (Math.random() * -18) - 6;
                 let rotation = Math.random() * 360;
                 let rotSpeed = (Math.random() * 12) - 6;
                 let curX = parseFloat(piece.style.left);
@@ -561,7 +1008,7 @@
                     piece.style.top = `${curY}px`;
                     piece.style.transform = `rotate(${rotation}deg)`;
 
-                    if (curY > 570 || curX < -20 || curX > 1020) {
+                    if (curY > 685 || curX < -20 || curX > 1220) {
                         clearInterval(particleInterval);
                         piece.remove();
                     }
@@ -688,9 +1135,9 @@
 
         const itemWrapper = document.getElementById('checkout-item-container');
         itemWrapper.innerHTML = '';
-        itemWrapper.style.left = '90px'; 
+        itemWrapper.style.left = '110px'; 
         itemWrapper.style.top = ''; 
-        itemWrapper.style.bottom = '220px'; 
+        itemWrapper.style.bottom = '264px'; 
         
         const product = itemsInCartArr[checkoutStepIndex];
         itemWrapper.innerHTML = product.svg;
@@ -727,16 +1174,16 @@
             let relativeY = mY - containerRect.top - offsetY;
             
             if (relativeX < 10) relativeX = 10;
-            if (relativeX > 850) relativeX = 850;
+            if (relativeX > 1050) relativeX = 1050;
             if (relativeY < 10) relativeY = 10;
-            if (relativeY > 420) relativeY = 420;
+            if (relativeY > 520) relativeY = 520;
 
             itemWrapper.style.left = `${relativeX}px`;
             itemWrapper.style.top = `${relativeY}px`;
             itemWrapper.style.bottom = 'auto';
 
-            let itemCenterX = relativeX + 47; 
-            if (itemCenterX >= 430 && itemCenterX <= 580 && !isScanned) {
+            let itemCenterX = relativeX + 57; 
+            if (itemCenterX >= 510 && itemCenterX <= 680 && !isScanned) {
                 isScanned = true;
                 scanGlass.classList.add('active-scan');
                 playNativeBeep('scan');
@@ -751,36 +1198,40 @@
             document.removeEventListener('touchend', onEnd);
             laserLine.classList.remove('scanning');
 
-            let finalCenterX = itemWrapper.offsetLeft + 47;
+            let finalCenterX = itemWrapper.offsetLeft + 57;
             
-            if (isScanned && finalCenterX >= 450) {
+            if (isScanned && finalCenterX >= 520) {
                 const bag = document.getElementById('paper-bag');
+                const frontLip = bag.querySelector('.bag-front-lip');
                 const micro = document.createElement('div');
                 micro.className = 'bag-content-item';
 
                 let layerIndex = Math.floor(checkoutStepIndex / 2); 
                 let itemInLayer = checkoutStepIndex % 2;           
 
-                let leftPos = itemInLayer === 0 ? 32 : 102;
-                let bottomPos = (layerIndex * 48) + 65; 
+                let leftPos = itemInLayer === 0 ? 38 : 124;
+                
+                // FIXED BAG DROPPING POSITIONS: Increased bottom offset heavily so they stay inside the visual container bounds
+                let bottomPos = (layerIndex * 58) + 65; 
 
-                // Lowered the 5th item slightly so it sets perfectly into the bag setup
                 if (checkoutStepIndex === 4) {
-                    leftPos = 68;
-                    bottomPos = 132; 
+                    leftPos = 81;
+                    bottomPos = 135; 
                 }
 
                 micro.style.left = `${leftPos}px`;
                 micro.style.bottom = `${bottomPos}px`; 
                 micro.innerHTML = itemsInCartArr[checkoutStepIndex].svg;
-                bag.appendChild(micro);
+                
+                // Insert items BEFORE the front lip layer so they appear inside the bag
+                bag.insertBefore(micro, frontLip);
 
                 checkoutStepIndex++;
                 setTimeout(loadNextCheckoutItem, 150);
             } else {
-                itemWrapper.style.left = '90px';
+                itemWrapper.style.left = '110px';
                 itemWrapper.style.top = '';
-                itemWrapper.style.bottom = '220px';
+                itemWrapper.style.bottom = '264px';
             }
         }
         
