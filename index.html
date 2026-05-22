@@ -11,11 +11,11 @@
     background: #f0f2f5; 
     display: flex; 
     justify-content: center; 
-    align-items: center; 
+    align-items: flex-start; /* Changed from center to let it scroll down naturally */
     min-height: 100vh;
-    width: 100vw;
-    overflow: hidden; 
-    position: relative;
+    overflow-y: auto; /* Changed from hidden to enable vertical scrolling */
+    overflow-x: hidden;
+    padding: 20px 0; /* Gives a little breathing room on the top and bottom */
 }
         
         #game-container {
@@ -600,18 +600,17 @@
         }
 
         /* Mobile & Tablet Auto-Scaling Fix */
-/* Enhanced Responsive Scaling Fix */
+/* Enhanced Responsive Scaling with Scroll Support */
 @media (max-width: 1240px) or (max-height: 700px) {
     #game-container {
-        /* Calculates a safe scaling ratio based on the viewport size */
         --scale-x: calc(100vw / 1240);
         --scale-y: calc(100vh / 700);
         --scale: min(var(--scale-x), var(--scale-y), 1);
         
         transform: scale(var(--scale));
-        transform-origin: center center;
+        transform-origin: top center; /* Scaled from the top so it scrolls down naturally */
+        margin-bottom: calc(-675px * (1 - var(--scale))); /* Collapses empty white space underneath */
         flex-shrink: 0;
-        margin: auto;
     }
 }
 
@@ -633,7 +632,7 @@
         text-align: center;
     }
     #game-container {
-        display: none !important; /* Hide the game entirely until they rotate */
+        display: none !important;
     }
 }
     </style>
