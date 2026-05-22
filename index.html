@@ -12,8 +12,10 @@
     display: flex; 
     justify-content: center; 
     align-items: center; 
-    min-height: 100vh; /* changed from height to min-height */
+    min-height: 100vh;
+    width: 100vw;
     overflow: hidden; 
+    position: relative;
 }
         
         #game-container {
@@ -598,21 +600,23 @@
         }
 
         /* Mobile & Tablet Auto-Scaling Fix */
+/* Enhanced Responsive Scaling Fix */
 @media (max-width: 1240px) or (max-height: 700px) {
     #game-container {
-        --scale-x: calc(100vw / 1220);
-        --scale-y: calc(100vh / 695);
-        /* Scale based on whichever dimension is tighter to prevent cropping */
+        /* Calculates a safe scaling ratio based on the viewport size */
+        --scale-x: calc(100vw / 1240);
+        --scale-y: calc(100vh / 700);
         --scale: min(var(--scale-x), var(--scale-y), 1);
         
         transform: scale(var(--scale));
         transform-origin: center center;
         flex-shrink: 0;
+        margin: auto;
     }
 }
 
-/* Force mobile users to flip to landscape mode for the best gameplay experience */
-@media (max-width: 767px) and (orientation: portrait) {
+/* Force Landscape Lock on Mobile Phones */
+@media (max-width: 900px) and (orientation: portrait) {
     body::before {
         content: "🔄 Please rotate your phone to landscape mode to play!";
         position: fixed;
@@ -623,10 +627,13 @@
         display: flex;
         justify-content: center;
         align-items: center;
-        font-weight: bold;
+        font-weight: 700;
         font-size: 20px;
-        padding: 20px;
+        padding: 30px;
         text-align: center;
+    }
+    #game-container {
+        display: none !important; /* Hide the game entirely until they rotate */
     }
 }
     </style>
