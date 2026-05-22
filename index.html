@@ -10,12 +10,12 @@
     font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
     background: #f0f2f5; 
     display: flex; 
-    justify-content: center; 
-    align-items: flex-start; /* Changed from center to let it scroll down naturally */
+    justify-content: flex-start; /* Changed to flex-start so content starts at the left edge */
+    align-items: flex-start; 
     min-height: 100vh;
-    overflow-y: auto; /* Changed from hidden to enable vertical scrolling */
-    overflow-x: hidden;
-    padding: 20px 0; /* Gives a little breathing room on the top and bottom */
+    overflow-y: auto; 
+    overflow-x: auto; /* ENABLES LEFT AND RIGHT SCROLLING */
+    padding: 20px; /* Uniform spacing around the game viewport */
 }
         
         #game-container {
@@ -599,17 +599,20 @@
             border-radius: 2px;
         }
 
-        /* Mobile & Tablet Auto-Scaling Fix */
-/* Enhanced Responsive Scaling with Scroll Support */
+       /* Enhanced Responsive Scaling with 4-Way Scroll Support */
 @media (max-width: 1240px) or (max-height: 700px) {
     #game-container {
-        --scale-x: calc(100vw / 1240);
-        --scale-y: calc(100vh / 700);
-        --scale: min(var(--scale-x), var(--scale-y), 1);
+        --scale-x: calc((100vw - 40px) / 1200);
+        --scale-y: calc((100vh - 40px) / 675);
+        /* Choose a safe minimum scaling limit so it doesn't shrink into nothing */
+        --scale: max(0.6, min(var(--scale-x), var(--scale-y), 1));
         
         transform: scale(var(--scale));
-        transform-origin: top center; /* Scaled from the top so it scrolls down naturally */
-        margin-bottom: calc(-675px * (1 - var(--scale))); /* Collapses empty white space underneath */
+        transform-origin: top left; /* Crucial for proper left-to-right scrolling alignment */
+        
+        /* Collapses layout phantom space caused by CSS scale transformations */
+        margin-bottom: calc(-675px * (1 - var(--scale))); 
+        margin-right: calc(-1200px * (1 - var(--scale)));
         flex-shrink: 0;
     }
 }
