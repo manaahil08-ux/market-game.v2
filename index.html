@@ -10,25 +10,24 @@
     font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
     background: #f0f2f5; 
     display: flex; 
-    justify-content: center; 
-    align-items: center; 
+    justify-content: flex-start; /* Changed to flex-start so content starts at the left edge */
+    align-items: flex-start; 
     min-height: 100vh;
-    overflow: hidden; 
-    margin: 0;
-    padding: 0;
+    overflow-y: auto; 
+    overflow-x: auto; /* ENABLES LEFT AND RIGHT SCROLLING */
+    padding: 20px; /* Uniform spacing around the game viewport */
 }
-
-#game-container {
-    /* Sets the default base resolution aspect ratio */
-    width: 1200px;
-    height: 675px;
-    position: relative;
-    background: #ffffff;
-    overflow: hidden;
-    box-shadow: 0 20px 40px rgba(0,0,0,0.08);
-    border-radius: 24px;
-    border: 1px solid #e1e8ed;
-}
+        
+        #game-container {
+            width: 1200px;
+            height: 675px;
+            position: relative;
+            background: #ffffff;
+            overflow: hidden;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.08);
+            border-radius: 24px;
+            border: 1px solid #e1e8ed;
+        }
 
         .screen { 
             display: none !important; 
@@ -600,18 +599,26 @@
             border-radius: 2px;
         }
 
-       /* True Mobile Fitting Scaling Fix */
-/* Bulletproof Mobile Scale-to-Fit Engine */
-@media (max-width: 1200px), (max-height: 675px) {
+        /* Mobile & Tablet Auto-Scaling Fix */
+/* Enhanced Responsive Scaling with 4-Way Scroll Support */
+@media (max-width: 1240px) or (max-height: 700px) {
     #game-container {
-        /* Forces the container to shrink perfectly to fit mobile viewport boundaries */
-        transform: scale(min(calc(100vw / 1220), calc(100vh / 695)));
-        transform-origin: center center;
+        --scale-x: calc((100vw - 40px) / 1200);
+        --scale-y: calc((100vh - 40px) / 675);
+        /* Choose a safe minimum scaling limit so it doesn't shrink into nothing */
+        --scale: max(0.6, min(var(--scale-x), var(--scale-y), 1));
+        
+        transform: scale(var(--scale));
+        transform-origin: top left; /* Crucial for proper left-to-right scrolling alignment */
+        
+        /* Collapses layout phantom space caused by CSS scale transformations */
+        margin-bottom: calc(-675px * (1 - var(--scale))); 
+        margin-right: calc(-1200px * (1 - var(--scale)));
         flex-shrink: 0;
     }
 }
 
-/* Landscape Mode Screen Lock Overlay */
+/* Force Landscape Lock on Mobile Phones */
 @media (max-width: 900px) and (orientation: portrait) {
     body::before {
         content: "🔄 Please rotate your phone to landscape mode to play!";
@@ -624,7 +631,7 @@
         justify-content: center;
         align-items: center;
         font-weight: 700;
-        font-size: 18px;
+        font-size: 20px;
         padding: 30px;
         text-align: center;
     }
