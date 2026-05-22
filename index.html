@@ -1,0 +1,794 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Market Chalein!?</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; }
+        body { 
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f0f2f5; 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            height: 100vh; 
+            overflow: hidden; 
+        }
+        
+        #game-container {
+            width: 1000px;
+            height: 562px;
+            position: relative;
+            background: #ffffff;
+            overflow: hidden;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.08);
+            border-radius: 20px;
+            border: 1px solid #e1e8ed;
+        }
+
+        .screen { 
+            display: none !important; 
+            width: 100%; 
+            height: 100%; 
+            position: absolute; 
+            top: 0; 
+            left: 0; 
+        }
+        
+        .screen.active { 
+            display: flex !important; 
+        }
+
+        /* --- SCREEN 1: INTRO --- */
+        #intro-screen { 
+            background: radial-gradient(circle at center, #ffffff 0%, #f4f7f9 100%);
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+        .welcome-badge {
+            background: #e1f5fe;
+            color: #0288d1;
+            padding: 6px 16px;
+            font-weight: 700;
+            font-size: 13px;
+            border-radius: 20px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 16px;
+        }
+        .game-title { 
+            font-size: 56px; 
+            color: #2c3e50; 
+            font-weight: 800;
+            text-align: center;
+            margin-bottom: 40px;
+            letter-spacing: -0.5px;
+        }
+        .start-btn { 
+            background: #4a69bd; 
+            color: white; 
+            border: none;
+            padding: 16px 45px; 
+            font-size: 20px; 
+            border-radius: 30px; 
+            cursor: pointer; 
+            font-weight: 700; 
+            box-shadow: 0 6px 15px rgba(74, 105, 189, 0.25);
+            transition: all 0.2s ease;
+        }
+        .start-btn:hover {
+            transform: translateY(-2px);
+            background: #3c56a6;
+            box-shadow: 0 8px 20px rgba(74, 105, 189, 0.35);
+        }
+        .start-btn:active { transform: translateY(2px); }
+
+        /* --- SCREEN 2: PLAY SCREEN --- */
+        #play-screen { 
+            position: relative;
+            background: #f8fafc;
+        }
+        
+        .aisle-background {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+            pointer-events: none;
+        }
+
+        #list-container { 
+            position: absolute; 
+            top: 25px; 
+            left: 25px; 
+            width: 230px; 
+            background: #ffffff; 
+            border-radius: 16px; 
+            padding: 15px 20px; 
+            box-shadow: 0 4px 12px rgba(0,0,0,0.03); 
+            z-index: 10; 
+            border: 1px solid #e2e8f0;
+        }
+        .list-header { 
+            font-size: 15px; 
+            color: #64748b; 
+            text-align: center; 
+            padding-bottom: 8px; 
+            margin-bottom: 8px; 
+            text-transform: uppercase; 
+            font-weight: 800;
+            letter-spacing: 0.5px;
+            border-bottom: 1px solid #f1f5f9;
+        }
+        .list-item { 
+            font-size: 15px; 
+            color: #334155; 
+            font-weight: 700; 
+            margin: 10px 0; 
+            opacity: 0; 
+            transform: translateY(6px); 
+            transition: all 0.3s ease; 
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .list-item.visible { opacity: 1; transform: translateY(0); }
+        .list-item .checkbox {
+            width: 18px;
+            height: 18px;
+            border: 2px solid #cbd5e1;
+            border-radius: 5px;
+            display: inline-block;
+            transition: all 0.2s ease;
+        }
+        .list-item.checked { color: #94a3b8; text-decoration: line-through; }
+        .list-item.checked .checkbox { 
+            background: #2ccce4; 
+            border-color: #2ccce4;
+            position: relative;
+        }
+        .list-item.checked .checkbox::after {
+            content: '';
+            position: absolute;
+            left: 4px;
+            top: 1px;
+            width: 4px;
+            height: 8px;
+            border: solid white;
+            border-width: 0 2px 2px 0;
+            transform: rotate(45deg);
+        }
+
+        #shelf-display-zone { 
+            position: absolute; 
+            top: 60px; 
+            left: 280px; 
+            width: 680px; 
+            height: 360px; 
+            display: flex; 
+            flex-wrap: wrap;
+            align-content: center;
+            justify-content: center; 
+            gap: 25px;
+            background: #ffffff;
+            border-bottom: 12px solid #e2e8f0; 
+            border-radius: 20px;
+            padding: 25px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.02);
+            z-index: 5;
+            border: 1px solid #e2e8f0;
+        }
+        
+        .shelf-item-btn { 
+            width: 135px; 
+            height: 135px; 
+            cursor: pointer;
+            transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            background: transparent;
+            border: none;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .shelf-item-btn:hover { transform: scale(1.08); }
+        .shelf-item-btn svg { width: 100%; height: 100%; }
+
+        .sliding-in { animation: slideInFromTop 0.4s ease forwards; }
+        @keyframes slideInFromTop { 0% { transform: translateY(-20px); opacity: 0; } 100% { transform: translateY(0); opacity: 1; } }
+        
+        .dropping-to-cart { animation: dropToCartArc 0.55s ease-in forwards; pointer-events: none; }
+        @keyframes dropToCartArc { 100% { transform: translate(-160px, 190px) scale(0.2); opacity: 0; } }
+
+        #shopping-cart-wrapper { 
+            position: absolute; 
+            bottom: 25px; 
+            left: 25px; 
+            width: 230px; 
+            height: 140px; 
+            z-index: 10;
+        }
+        #shopping-cart-wrapper svg { width: 100%; height: 100%; filter: drop-shadow(0 4px 10px rgba(0,0,0,0.03)); }
+
+        /* --- SCREEN 3: CHECKOUT --- */
+        #checkout-screen { 
+            background: #f4f7f9;
+        }
+        .checkout-layout { width: 100%; height: 100%; position: relative; }
+        
+        .cashier-wrapper {
+            position: absolute;
+            bottom: 194px; 
+            left: 200px;
+            width: 210px;
+            height: 310px; 
+            z-index: 1;
+            pointer-events: none;
+        }
+        .cashier-wrapper svg { width: 100%; height: 100%; overflow: visible; }
+
+        #conveyor-belt { position: absolute; bottom: 190px; left: 40px; width: 640px; height: 22px; background: #cbd5e1; border-radius: 6px; border-bottom: 6px solid #94a3b8; z-index: 5; }
+        
+        #scanner-unit { 
+            position: absolute; 
+            bottom: 212px; 
+            left: 450px; 
+            width: 130px; 
+            height: 18px; 
+            background: #475569; 
+            z-index: 6; 
+            border-radius: 4px;
+            border: 2px solid #ffffff;
+            box-shadow: 0 3px 6px rgba(0,0,0,0.12);
+        }
+        #scanner-glass {
+            position: absolute;
+            inset: 2px;
+            background: rgba(56, 189, 248, 0.3);
+            border-radius: 2px;
+            transition: background 0.1s ease;
+        }
+        #scanner-glass.active-scan {
+            background: rgba(45, 212, 191, 0.7);
+        }
+        #laser-line { 
+            position: absolute; 
+            top: -150px; 
+            left: 63px; 
+            width: 3px; 
+            height: 150px; 
+            background: linear-gradient(to bottom, rgba(56,189,248,0) 0%, rgba(56,189,248,0.6) 100%); 
+            display: none; 
+            z-index: 7;
+        }
+        #laser-line.scanning { display: block; }
+
+        #checkout-item-container { 
+            position: absolute; 
+            bottom: 220px; 
+            left: 90px; 
+            width: 95px; 
+            height: 95px; 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            z-index: 25; 
+            cursor: grab;
+            touch-action: none;
+        }
+        #checkout-item-container:active { cursor: grabbing; }
+        #checkout-item-container svg { width: 100%; height: 100%; }
+
+        /* The Bag Container Component */
+        #paper-bag { 
+            position: absolute; 
+            bottom: 160px; 
+            right: 80px; 
+            width: 210px; 
+            height: 240px; 
+            z-index: 10;
+        }
+        /* Base back asset layer */
+        .bag-back-layout {
+            position: absolute;
+            inset: 0;
+            z-index: 1;
+        }
+        .bag-back-layout svg { width: 100%; height: 100%; filter: drop-shadow(0 6px 12px rgba(0,0,0,0.05)); }
+        
+        /* Items slot perfectly into z-index 5, between the back and front of the bag */
+        .bag-content-item { 
+            position: absolute; 
+            width: 65px; 
+            height: 65px; 
+            z-index: 5; 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            transition: all 0.2s ease-out;
+        }
+        .bag-content-item svg { width: 100%; height: 100%; }
+
+        /* Structural front lip line overlay */
+        .bag-front-lip {
+            position: absolute;
+            inset: 0;
+            z-index: 10;
+            pointer-events: none;
+        }
+        .bag-front-lip svg { width: 100%; height: 100%; }
+
+        #interim-overlay { display: none !important; position: absolute; inset: 0; background: rgba(255,255,255,0.95); backdrop-filter: blur(4px); z-index: 100; justify-content: center; align-items: center; color: #2c3e50; }
+        #interim-overlay.show { display: flex !important; }
+        .interim-text { font-size: 32px; font-weight: 800; text-align: center; }
+
+        /* --- SCREEN 4: WIN OVERLAYS --- */
+        #win-overlay { display: none !important; position: absolute; inset: 0; background: rgba(255,255,255,0.85); backdrop-filter: blur(4px); z-index: 200; justify-content: center; align-items: center; }
+        #win-overlay.show { display: flex !important; }
+        .shabash-card { background: white; border-radius: 20px; padding: 35px 65px; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.05); border: 1px solid #e2e8f0; }
+        .shabash-title { font-size: 44px; color: #2ccce4; font-weight: 800; }
+        
+        #final-win-screen { 
+            background: radial-gradient(circle at center, #ffffff 0%, #f4f7f9 100%);
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+        .thankyou-title { font-size: 60px; color: #2c3e50; font-weight: 800; text-align: center; margin-bottom: 8px; }
+        .thankyou-subtitle { font-size: 18px; color: #64748b; margin-bottom: 35px; font-weight: 500; }
+
+        .confetti-piece {
+            position: absolute;
+            width: 8px;
+            height: 14px;
+            background: #ff6b6b;
+            opacity: 0.85;
+            z-index: 250;
+            pointer-events: none;
+            border-radius: 2px;
+        }
+    </style>
+</head>
+<body>
+
+<div id="game-container">
+    <div id="interim-overlay"><div class="interim-text">Counter Pe Chalein...</div></div>
+
+    <div id="intro-screen" class="screen active">
+        <div class="welcome-badge">Market Run</div>
+        <h1 class="game-title">Market Chalein!?</h1>
+        <button class="start-btn" id="btn-start">Start Shopping</button>
+    </div>
+
+    <div id="play-screen" class="screen">
+        <svg class="aisle-background" viewBox="0 0 1000 562" preserveAspectRatio="none">
+            <rect width="1000" height="562" fill="#f8fafc"/>
+            <path d="M0 395 L1000 395 L1000 562 L0 562 Z" fill="#f1f5f9"/>
+        </svg>
+
+        <div id="list-container">
+            <div class="list-header">Shopping List</div>
+            <div id="notepad-items-target"></div>
+        </div>
+        
+        <div id="shelf-display-zone"></div>
+        
+        <div id="shopping-cart-wrapper">
+            <svg viewBox="0 0 100 100">
+                <circle cx="33" cy="82" r="8" fill="#475569"/>
+                <circle cx="73" cy="82" r="8" fill="#475569"/>
+                <path d="M8 15 h14 l12 42 h38 l14 -32 h-66" fill="none" stroke="#475569" stroke-width="5.5" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M38 27 h34 M41 37 h28" fill="none" stroke="#94a3b8" stroke-width="2.5" stroke-linecap="round"/>
+            </svg>
+        </div>
+    </div>
+
+    <div id="checkout-screen" class="screen">
+        <div class="checkout-layout">
+            
+            <div class="cashier-wrapper">
+                <svg viewBox="0 0 140 240" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M15 240 L15 210 C15 140 125 140 125 210 L125 240 Z" fill="#2c3e50"/>
+                    <path d="M20 190 Q 35 175, 55 185" stroke="#2c3e50" stroke-width="14" stroke-linecap="round" fill="none" />
+                    <path d="M120 190 Q 105 175, 85 185" stroke="#2c3e50" stroke-width="14" stroke-linecap="round" fill="none" />
+                    <circle cx="55" cy="185" r="7" fill="#fcd34d"/>
+                    <circle cx="85" cy="185" r="7" fill="#fcd34d"/>
+                    <path d="M44 165 L96 165 L102 240 L38 240 Z" fill="#e74c3c"/>
+                    <rect x="58" y="130" width="24" height="30" fill="#fcd34d" rx="2"/>
+                    <circle cx="70" cy="105" r="28" fill="#fcd34d"/>
+                    <path d="M42 103 C42 77 98 77 98 103 C98 95 92 87 70 87 C48 87 42 95 42 103 Z" fill="#1e293b"/>
+                    <circle cx="60" cy="101" r="2.5" fill="#2c3e50"/>
+                    <circle cx="80" cy="101" r="2.5" fill="#2c3e50"/>
+                    <path d="M63 113 Q70 118 77 113" stroke="#2c3e50" stroke-width="2" stroke-linecap="round" fill="none"/>
+                </svg>
+            </div>
+
+            <div id="conveyor-belt"></div>
+            <div id="scanner-unit">
+                <div id="scanner-glass"></div>
+                <div id="laser-line"></div>
+            </div>
+            <div id="checkout-item-container"></div>
+            
+            <div id="paper-bag">
+                <div class="bag-back-layout">
+                    <svg viewBox="0 0 100 100">
+                        <path d="M20 30 l6 -16 h48 l6 16 v56 h-60 z" fill="#e2b48c" stroke="#c6956b" stroke-width="1.5"/>
+                        <path d="M40 14 q10 -10 20 0" fill="none" stroke="#a06e46" stroke-width="3.5" stroke-linecap="round"/>
+                    </svg>
+                </div>
+                <div class="bag-front-lip">
+                    <svg viewBox="0 0 100 100">
+                        <path d="M20 30 l6 -16 h48 l6 16 v56 h-60 z" fill="none" stroke="#c6956b" stroke-width="1.5"/>
+                    </svg>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="win-overlay">
+        <div class="shabash-card">
+            <div class="shabash-title">SHABASH!</div>
+        </div>
+    </div>
+
+    <div id="final-win-screen" class="screen">
+        <h1 class="thankyou-title">Shabash!</h1>
+        <div class="thankyou-subtitle">All items have been packed perfectly.</div>
+        <button class="start-btn" id="btn-restart">Play Again</button>
+    </div>
+</div>
+
+<script>
+    const ITEM_GRAPHICS = {
+        cucumber: `<svg viewBox="0 0 100 100"><g transform="translate(10, 10)"><rect x="24" y="12" width="30" height="66" rx="15" fill="#2a7b56" transform="rotate(20 39 45)"/><circle cx="34" cy="38" r="2.5" fill="#ffffff"/><circle cx="46" cy="42" r="2.5" fill="#ffffff"/><circle cx="34" cy="38" r="1.2" fill="#000000"/><circle cx="46" cy="42" r="1.2" fill="#000000"/><path d="M36 47 Q40 50 44 48" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round"/></g></svg>`,
+        carrot: `<svg viewBox="0 0 100 100"><g transform="translate(0, -5)"><path d="M50 32 C45 15 38 18 40 4" fill="none" stroke="#2a7b56" stroke-width="3" stroke-linecap="round"/><path d="M50 32 C50 12 56 10 54 2" fill="none" stroke="#2a7b56" stroke-width="3.5" stroke-linecap="round"/><path d="M34 32 C34 32 36 68 48 94 C50 98 52 98 54 94 C66 68 68 32 68 32 Z" fill="#e67e22"/><circle cx="45" cy="44" r="2" fill="#000000"/><circle cx="57" cy="44" r="2" fill="#000000"/><path d="M49 51 Q51 53 53 51" fill="none" stroke="#000000" stroke-width="1.5" stroke-linecap="round"/></g></svg>`,
+        tomato: `<svg viewBox="0 0 100 100"><circle cx="50" cy="54" r="35" fill="#e74c3c"/><ellipse cx="36" cy="36" rx="7" ry="3.5" fill="#fff" transform="rotate(-20 36 36)" opacity="0.4"/><circle cx="42" cy="50" r="2" fill="#000000"/><circle cx="58" cy="50" r="2" fill="#000000"/><path d="M47 58 Q50 62 53 58" fill="none" stroke="#000000" stroke-width="1.5" stroke-linecap="round"/><path d="M50 19 L52 9 M50 19 L39 14 M50 19 L61 14" fill="none" stroke="#2a7b56" stroke-width="3.5" stroke-linecap="round"/></svg>`,
+        onion: `<svg viewBox="0 0 100 100"><path d="M50 82 L46 89 M50 82 L50 91 M50 82 L54 89" stroke="#cbd5e1" stroke-width="2"/><path d="M50 16 C18 42 16 76 50 86 C84 76 82 42 50 16 Z" fill="#9b59b6"/><circle cx="43" cy="52" r="2" fill="#000000"/><circle cx="57" cy="52" r="2" fill="#000000"/><path d="M48 60 Q50 63 52 60" fill="none" stroke="#000000" stroke-width="1.5" stroke-linecap="round"/><path d="M50 16 L50 7" fill="none" stroke="#2a7b56" stroke-width="3" stroke-linecap="round"/></svg>`,
+        apple: `<svg viewBox="0 0 100 100"><path d="M50 34 Q54 16 63 18" fill="none" stroke="#64748b" stroke-width="3.5" stroke-linecap="round"/><path d="M50 38 C40 34 18 36 20 64 C22 86 42 90 50 84 C58 90 78 86 80 64 C82 36 60 34 50 38 Z" fill="#ff6b6b"/><circle cx="41" cy="54" r="2" fill="#000000"/><circle cx="59" cy="54" r="2" fill="#000000"/><path d="M47 62 Q50 65 53 62" fill="none" stroke="#000000" stroke-width="1.5" stroke-linecap="round"/></svg>`,
+        banana: `<svg viewBox="0 0 100 100"><g transform="translate(0, 15)"><path d="M12 40 Q50 10 88 37 Q50 60 12 40" fill="#f1c40f"/><circle cx="44" cy="32" r="2" fill="#000000"/><circle cx="58" cy="34" r="2" fill="#000000"/><path d="M49 39 Q51 42 53 39" fill="none" stroke="#000000" stroke-width="1.5" stroke-linecap="round"/><path d="M8 37 L13 44 L10 46 Z" fill="#64748b"/><path d="M86 35 L91 39 L88 42 Z" fill="#64748b"/></g></svg>`
+    };
+
+    const TOTAL_ITEMS_POOL = [
+        { id: 'cucumber', urduName: 'KHEERA', svg: ITEM_GRAPHICS.cucumber },
+        { id: 'carrot', urduName: 'GAJAR', svg: ITEM_GRAPHICS.carrot },
+        { id: 'tomato', urduName: 'TAMATAR', svg: ITEM_GRAPHICS.tomato },
+        { id: 'onion', urduName: 'PYAZ', stroke: '#000', svg: ITEM_GRAPHICS.onion },
+        { id: 'apple', urduName: 'SAIB', svg: ITEM_GRAPHICS.apple },
+        { id: 'banana', urduName: 'KELA', svg: ITEM_GRAPHICS.banana }
+    ];
+
+    let groceryList = []; 
+    let checkedItemsSet = new Set(); 
+    let itemsInCartArr = []; 
+    let checkoutStepIndex = 0;
+
+    const uiIntroScreen = document.getElementById('intro-screen');
+    const uiPlayScreen = document.getElementById('play-screen');
+    const uiCheckoutScreen = document.getElementById('checkout-screen');
+    const uiFinalWinScreen = document.getElementById('final-win-screen');
+    const uiInterimOverlay = document.getElementById('interim-overlay');
+    const uiWinOverlay = document.getElementById('win-overlay');
+    const btnStart = document.getElementById('btn-start');
+    const btnRestart = document.getElementById('btn-restart');
+    const notepadTarget = document.getElementById('notepad-items-target');
+    const shelfDisplayZone = document.getElementById('shelf-display-zone');
+
+    let audioCtx = null;
+    function playNativeBeep(type) {
+        try {
+            if (!audioCtx) {
+                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            }
+            let osc = audioCtx.createOscillator();
+            let gain = audioCtx.createGain();
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+
+            if (type === 'pop') {
+                osc.frequency.setValueAtTime(380, audioCtx.currentTime);
+                osc.frequency.exponentialRampToValueAtTime(750, audioCtx.currentTime + 0.08);
+                gain.gain.setValueAtTime(0.04, audioCtx.currentTime);
+                gain.gain.linearRampToValueAtTime(0, audioCtx.currentTime + 0.08);
+                osc.start(); osc.stop(audioCtx.currentTime + 0.08);
+            } else if (type === 'cart') {
+                osc.frequency.setValueAtTime(200, audioCtx.currentTime);
+                gain.gain.setValueAtTime(0.08, audioCtx.currentTime);
+                gain.gain.linearRampToValueAtTime(0, audioCtx.currentTime + 0.08);
+                osc.start(); osc.stop(audioCtx.currentTime + 0.08);
+            } else if (type === 'scan') {
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(1300, audioCtx.currentTime);
+                gain.gain.setValueAtTime(0.06, audioCtx.currentTime);
+                gain.gain.linearRampToValueAtTime(0, audioCtx.currentTime + 0.05);
+                osc.start(); osc.stop(audioCtx.currentTime + 0.05);
+            } else if (type === 'victory') {
+                let now = audioCtx.currentTime;
+                let freqs = [523.25, 659.25, 783.99, 1046.50]; 
+                freqs.forEach((f, idx) => {
+                    let o = audioCtx.createOscillator();
+                    let g = audioCtx.createGain();
+                    o.type = 'sine';
+                    o.frequency.setValueAtTime(f, now + (idx * 0.1));
+                    g.gain.setValueAtTime(0.05, now + (idx * 0.1));
+                    g.gain.linearRampToValueAtTime(0, now + (idx * 0.1) + 0.4);
+                    o.connect(g);
+                    g.connect(audioCtx.destination);
+                    o.start(now + (idx * 0.1));
+                    o.stop(now + (idx * 0.1) + 0.4);
+                });
+            }
+        } catch(e) {}
+    }
+
+    function spawnConfettiExplosion() {
+        const gameContainer = document.getElementById('game-container');
+        const particlesPerSide = 45;
+        const colorPalette = ['#ffd32a', '#ff4757', '#2ed573', '#1e90ff', '#ffa502', '#9b59b6'];
+
+        const launchOrigins = [
+            { x: 140, y: 220, dirFactor: 1 },  
+            { x: 800, y: 220, dirFactor: -1 }  
+        ];
+
+        launchOrigins.forEach(origin => {
+            for(let i = 0; i < particlesPerSide; i++) {
+                const piece = document.createElement('div');
+                piece.className = 'confetti-piece';
+                piece.style.background = colorPalette[Math.floor(Math.random() * colorPalette.length)];
+                
+                piece.style.left = `${origin.x + (Math.random() * 40 - 20)}px`;
+                piece.style.top = `${origin.y + (Math.random() * 40 - 20)}px`;
+                gameContainer.appendChild(piece);
+
+                let velX = (Math.random() * 8 + 2) * origin.dirFactor;
+                let velY = (Math.random() * -15) - 6;
+                let rotation = Math.random() * 360;
+                let rotSpeed = (Math.random() * 12) - 6;
+                let curX = parseFloat(piece.style.left);
+                let curY = parseFloat(piece.style.top);
+                let gravity = 0.45;
+
+                let particleInterval = setInterval(() => {
+                    velY += gravity;
+                    curX += velX;
+                    curY += velY;
+                    rotation += rotSpeed;
+
+                    piece.style.left = `${curX}px`;
+                    piece.style.top = `${curY}px`;
+                    piece.style.transform = `rotate(${rotation}deg)`;
+
+                    if (curY > 570 || curX < -20 || curX > 1020) {
+                        clearInterval(particleInterval);
+                        piece.remove();
+                    }
+                }, 16);
+            }
+        });
+    }
+
+    function changeActiveScreen(targetScreen) {
+        uiIntroScreen.classList.remove('active');
+        uiPlayScreen.classList.remove('active');
+        uiCheckoutScreen.classList.remove('active');
+        uiFinalWinScreen.classList.remove('active');
+        targetScreen.classList.add('active');
+    }
+
+    function initNewGameSession() {
+        itemsInCartArr = [];
+        checkedItemsSet.clear();
+        checkoutStepIndex = 0;
+        notepadTarget.innerHTML = '';
+        shelfDisplayZone.innerHTML = '';
+        
+        document.querySelectorAll('.bag-content-item').forEach(el => el.remove());
+        document.querySelectorAll('.confetti-piece').forEach(el => el.remove());
+
+        let poolCopy = [...TOTAL_ITEMS_POOL];
+        poolCopy.sort(() => 0.5 - Math.random());
+        groceryList = poolCopy.slice(0, 5); 
+
+        changeActiveScreen(uiPlayScreen);
+        executeNotepadSequence();
+    }
+
+    btnStart.addEventListener('click', initNewGameSession);
+    btnRestart.addEventListener('click', initNewGameSession);
+
+    function executeNotepadSequence() {
+        groceryList.forEach((product, idx) => {
+            const row = document.createElement('div');
+            row.className = 'list-item';
+            row.id = `notepad-item-${product.id}`;
+            row.innerHTML = `<span class="checkbox"></span> ${product.urduName}`;
+            notepadTarget.appendChild(row);
+            setTimeout(() => { row.classList.add('visible'); }, idx * 80); 
+        });
+        setTimeout(spawnNextShelfGroup, groceryList.length * 90 + 100);
+    }
+
+    function spawnNextShelfGroup() {
+        if (checkedItemsSet.size >= groceryList.length) {
+            setTimeout(transitionToCheckoutPhase, 400);
+            return;
+        }
+
+        shelfDisplayZone.innerHTML = '';
+
+        let remainingListItems = groceryList.filter(item => !checkedItemsSet.has(item.id));
+        let guaranteedCorrectItem = remainingListItems[0];
+
+        let alternativeCandidates = TOTAL_ITEMS_POOL.filter(item => item.id !== guaranteedCorrectItem.id);
+        alternativeCandidates.sort(() => 0.5 - Math.random());
+
+        let sectionPool = [
+            guaranteedCorrectItem, 
+            alternativeCandidates[0], 
+            alternativeCandidates[1], 
+            alternativeCandidates[2]
+        ];
+        
+        sectionPool.sort(() => 0.5 - Math.random());
+        playNativeBeep('pop');
+
+        sectionPool.forEach(product => {
+            const btnElement = document.createElement('button');
+            btnElement.className = 'shelf-item-btn sliding-in';
+            btnElement.innerHTML = product.svg;
+            
+            btnElement.addEventListener('click', () => {
+                const isOnShoppingList = groceryList.some(item => item.id === product.id);
+                const isAlreadyChecked = checkedItemsSet.has(product.id);
+
+                if (isOnShoppingList && !isAlreadyChecked) {
+                    btnElement.classList.remove('sliding-in');
+                    btnElement.classList.add('dropping-to-cart');
+                    
+                    playNativeBeep('cart');
+
+                    checkedItemsSet.add(product.id);
+                    const itemMatch = document.getElementById(`notepad-item-${product.id}`);
+                    if (itemMatch) itemMatch.classList.add('checked');
+
+                    itemsInCartArr.push(product);
+
+                    setTimeout(spawnNextShelfGroup, 550);
+                }
+            });
+            shelfDisplayZone.appendChild(btnElement);
+        });
+    }
+
+    function transitionToCheckoutPhase() {
+        uiInterimOverlay.classList.add('show');
+        setTimeout(() => {
+            uiInterimOverlay.classList.remove('show');
+            changeActiveScreen(uiCheckoutScreen);
+            checkoutStepIndex = 0; 
+            loadNextCheckoutItem();
+        }, 1100);
+    }
+
+    function loadNextCheckoutItem() {
+        if (checkoutStepIndex >= itemsInCartArr.length) {
+            spawnConfettiExplosion();
+            playNativeBeep('victory');
+            
+            uiWinOverlay.classList.add('show');
+            setTimeout(() => {
+                uiWinOverlay.classList.remove('show');
+                changeActiveScreen(uiFinalWinScreen);
+            }, 1600);
+            return;
+        }
+
+        const itemWrapper = document.getElementById('checkout-item-container');
+        itemWrapper.innerHTML = '';
+        itemWrapper.style.left = '90px'; 
+        itemWrapper.style.top = ''; 
+        itemWrapper.style.bottom = '220px'; 
+        
+        const product = itemsInCartArr[checkoutStepIndex];
+        itemWrapper.innerHTML = product.svg;
+        
+        itemWrapper.removeEventListener('mousedown', initiateCheckoutDrag);
+        itemWrapper.removeEventListener('touchstart', initiateCheckoutDrag);
+        
+        itemWrapper.addEventListener('mousedown', initiateCheckoutDrag);
+        itemWrapper.addEventListener('touchstart', initiateCheckoutDrag, { passive: false });
+    }
+
+    function initiateCheckoutDrag(e) {
+        e.preventDefault();
+        const itemWrapper = document.getElementById('checkout-item-container');
+        const laserLine = document.getElementById('laser-line');
+        const scanGlass = document.getElementById('scanner-glass');
+        const gameContainer = document.getElementById('game-container');
+        
+        let containerRect = gameContainer.getBoundingClientRect();
+        let clientX = e.type.startsWith('touch') ? e.touches[0].clientX : e.clientX;
+        let clientY = e.type.startsWith('touch') ? e.touches[0].clientY : e.clientY;
+        
+        let offsetX = clientX - itemWrapper.getBoundingClientRect().left;
+        let offsetY = clientY - itemWrapper.getBoundingClientRect().top;
+        let isScanned = false;
+
+        laserLine.classList.add('scanning');
+
+        function onMove(moveEvent) {
+            let mX = moveEvent.type.startsWith('touch') ? moveEvent.touches[0].clientX : moveEvent.clientX;
+            let mY = moveEvent.type.startsWith('touch') ? moveEvent.touches[0].clientY : moveEvent.clientY;
+            
+            let relativeX = mX - containerRect.left - offsetX;
+            let relativeY = mY - containerRect.top - offsetY;
+            
+            if (relativeX < 10) relativeX = 10;
+            if (relativeX > 850) relativeX = 850;
+            if (relativeY < 10) relativeY = 10;
+            if (relativeY > 420) relativeY = 420;
+
+            itemWrapper.style.left = `${relativeX}px`;
+            itemWrapper.style.top = `${relativeY}px`;
+            itemWrapper.style.bottom = 'auto';
+
+            let itemCenterX = relativeX + 47; 
+            if (itemCenterX >= 430 && itemCenterX <= 580 && !isScanned) {
+                isScanned = true;
+                scanGlass.classList.add('active-scan');
+                playNativeBeep('scan');
+                setTimeout(() => { scanGlass.classList.remove('active-scan'); }, 120);
+            }
+        }
+
+        function onEnd() {
+            document.removeEventListener('mousemove', onMove);
+            document.removeEventListener('mouseup', onEnd);
+            document.removeEventListener('touchmove', onMove);
+            document.removeEventListener('touchend', onEnd);
+            laserLine.classList.remove('scanning');
+
+            let finalCenterX = itemWrapper.offsetLeft + 47;
+            
+            if (isScanned && finalCenterX >= 450) {
+                const bag = document.getElementById('paper-bag');
+                const micro = document.createElement('div');
+                micro.className = 'bag-content-item';
+
+                let layerIndex = Math.floor(checkoutStepIndex / 2); 
+                let itemInLayer = checkoutStepIndex % 2;           
+
+                let leftPos = itemInLayer === 0 ? 32 : 102;
+                let bottomPos = (layerIndex * 48) + 65; 
+
+                // Lowered the 5th item slightly so it sets perfectly into the bag setup
+                if (checkoutStepIndex === 4) {
+                    leftPos = 68;
+                    bottomPos = 132; 
+                }
+
+                micro.style.left = `${leftPos}px`;
+                micro.style.bottom = `${bottomPos}px`; 
+                micro.innerHTML = itemsInCartArr[checkoutStepIndex].svg;
+                bag.appendChild(micro);
+
+                checkoutStepIndex++;
+                setTimeout(loadNextCheckoutItem, 150);
+            } else {
+                itemWrapper.style.left = '90px';
+                itemWrapper.style.top = '';
+                itemWrapper.style.bottom = '220px';
+            }
+        }
+        
+        document.addEventListener('mousemove', onMove);
+        document.addEventListener('mouseup', onEnd);
+        document.addEventListener('touchmove', onMove, { passive: false });
+        document.addEventListener('touchend', onEnd);
+    }
+</script>
+</body>
+</html>
